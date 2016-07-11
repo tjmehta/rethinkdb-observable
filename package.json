@@ -1,0 +1,38 @@
+{
+  "name": "rethinkdb-observable",
+  "version": "0.0.0",
+  "description": "Convert a rethinkdb cursor into an observable",
+  "main": "index.js",
+  "scripts": {
+    "test": "istanbul cover _mocha ./test && istanbul --text check-coverage --statements 100 --functions 100 --branches 100 --lines 100",
+    "test-watch": "nodemon -x mocha ./test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tjmehta/rethinkdb-observable.git"
+  },
+  "keywords": [
+    "rethinkdb",
+    "rethink",
+    "cursor",
+    "observable",
+    "observe",
+    "subscribe",
+    "reactive"
+  ],
+  "author": "Tejesh Mehta",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/tjmehta/rethinkdb-observable/issues"
+  },
+  "homepage": "https://github.com/tjmehta/rethinkdb-observable",
+  "dependencies": {
+    "101": "^1.6.0",
+    "sinon": "^1.17.4"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "istanbul": "^0.4.4",
+    "mocha": "^2.5.3"
+  }
+}
