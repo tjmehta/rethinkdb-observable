@@ -32,6 +32,7 @@ rethinkdb.table('test').then(function (cursor) {
   // dispose will detach the subscription callbacks
   // if dispose detaches the last subscription, the cursor will be closed
 })
+```
 
 # License
 MIT
