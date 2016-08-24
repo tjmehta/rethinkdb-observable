@@ -45,7 +45,8 @@ var r = require('rethinkdb')
 require('rxjs/add/operator/publish')
 
 rethinkdb.table('test').run(conn).then(function (cursor) {
-  // Note: this is a basic observable and only allows ONE subscription. for multiple, see example below.
+  // `publish` creates a connectable observable (multiple subscriptions)
+  // `refCount` invokes subscribe on the first subscription
   var observable = rethinkdbObservable(cursor).publish().refCount()
   // subscribe usage
   var subscription = observable.subscribe(
