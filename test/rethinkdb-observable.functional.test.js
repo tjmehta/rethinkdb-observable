@@ -79,8 +79,8 @@ describe('rethinkdb-observable functional tests', function () {
         var subscription = rethinkdbObservable(cursor).subscribe(
           // onNext
           function (row) {
+            results.push(row)
             unsubscribeAndFinish()
-            return results.push(row)
           },
           // onError
           done,
@@ -91,11 +91,9 @@ describe('rethinkdb-observable functional tests', function () {
           // async assert to make extra sure onComplete is not called..
           subscription.unsubscribe()
           sinon.assert.calledOnce(self.cursor.close)
-          setTimeout(function () {
-            expect(subscription.unsubscribe).to.be.a('function')
-            expect(results.length).to.equal(1)
-            done()
-          }, 1)
+          expect(subscription.unsubscribe).to.be.a('function')
+          expect(results.length).to.equal(1)
+          done()
         }
       }).catch(done)
     })
@@ -183,6 +181,53 @@ describe('rethinkdb-observable functional tests', function () {
             }, 1)
           }
         }).catch(done)
+      })
+    })
+
+    describe('chained observable', function () {
+      it('should close conn on dispose', function (done) {
+        require('rxjs/add/observable/concat')
+        require('rxjs/add/observable/from')
+        require('rxjs/add/operator/filter')
+        require('rxjs/add/operator/map')
+        const Observable = require('rxjs/Observable').Observable
+        return r.table(TABLE).changes().run(this.conn)
+        .then(function (cursor) {
+          return rethinkdbObservable(cursor)
+        })
+        .then(function (observable1) {
+          return new Promise(function (resolve, reject) {
+            const results = []
+            observable1
+              .map(function (data) {
+                return { data: data }
+              })
+              .filter(function (data) {
+                return Boolean(data)
+              })
+            const observable2 = Observable.from([1,2,3,4])
+            const observable = Observable.concat(observable2, observable1)
+            const subscription = observable.subscribe(
+              function onNext(data) {
+                console.log('next')
+                console.log('next')
+                console.log('next')
+                results.push(data)
+              },
+              reject,
+              function onComplete() {
+                console.log('results')
+                resolve(results)
+              },
+            )
+            return new Promise(function (resolve) {
+              subscription.unsubscribe()
+              setTimeout(resolve, 10)
+            })
+          })
+          .then(done)
+          .catch(done)
+        })
       })
     })
   })
